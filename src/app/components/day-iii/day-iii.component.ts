@@ -23,13 +23,13 @@ CrZsJsPPZsGzwwsLwLmpwMDw`;
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input3.txt', { responseType: 'text' }).subscribe(data => {
-      this.result1 = this.getPrioritiesSum1(data);
-      this.result2 = this.getPrioritiesSum2(data);
+      const arr: string[] = data.split('\n');
+      this.result1 = this.getPrioritiesSum1(arr);
+      this.result2 = this.getPrioritiesSum2(arr);
     });
   }
 
-  getPrioritiesSum1(data: string): number {
-    const arr: string[] = data.split('\n');
+  getPrioritiesSum1(arr: string[]): number {
     let sum = 0;
     arr.forEach((item: string) => {
       const firstHalf = item.substring(0, item.length / 2);
@@ -40,8 +40,7 @@ CrZsJsPPZsGzwwsLwLmpwMDw`;
     return sum;
   }
 
-  getPrioritiesSum2(data: string): number {
-    const arr: string[] = data.split('\n');
+  getPrioritiesSum2(arr: string[]): number {
     const group3Arr: Array<string[]> = [];
     let i = 0;
     let sum = 0;
