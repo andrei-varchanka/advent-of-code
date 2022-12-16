@@ -8,36 +8,71 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DayIIIComponent implements OnInit {
 
-  result: number = 0;
+  result1: number = 0;
+
+  result2: number = 0;
+
+  data = `vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw`;
 
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input3.txt', { responseType: 'text' }).subscribe(data => {
-      this.result = this.getPrioritiesSum(data);
+      this.result1 = this.getPrioritiesSum1(data);
+      this.result2 = this.getPrioritiesSum2(data);
     });
   }
 
-  getPrioritiesSum(data: string): number {
+  getPrioritiesSum1(data: string): number {
     const arr: string[] = data.split('\r\n');
     let sum = 0;
-    arr.forEach(item => {
-      console.log(item);
-      const char = this.getRepeatingChar(item);
+    arr.forEach((item: string) => {
+      const firstHalf = item.substring(0, item.length / 2);
+      const secondHalf = item.substring(item.length / 2)
+      const char = this.getRepeatingChar([firstHalf, secondHalf], 2);
       sum += this.getPriority(char);
     });
     return sum;
   }
 
-  getRepeatingChar(str: string): string {
-    const arr = str.split('');
+  getPrioritiesSum2(data: string): number {
+    const arr: string[] = data.split('\r\n');
+    const group3Arr: Array<string[]> = [];
+    let i = 0;
+    let sum = 0;
+    arr.forEach((item: string) => {
+      group3Arr[i] = group3Arr[i] || [];
+      if (group3Arr[i].length == 3) {
+        i++;
+        group3Arr[i] = [];
+      }      
+      group3Arr[i].push(item);
+    });
+    group3Arr.forEach(item => {
+      const char = this.getRepeatingChar(item, 3);
+      console.log(char);
+      sum += this.getPriority(char);
+    });
+    return sum;
+  }
+
+  getRepeatingChar(strArr: string[], repeatingNumber: number): string {
     let repeatingChar = '';
-    const middleIndex = Math.ceil(arr.length / 2);
-    const uniqueFirstHalf = [...new Set(arr.splice(0, middleIndex))];
-    const uniqueSecondHalf = [...new Set(arr.splice(-middleIndex))];
-    const sortedUniqueArr = uniqueFirstHalf.concat(uniqueSecondHalf).sort();
+    const uniqueStrArr = strArr.map(item => [...new Set(item.split(''))]);
+    const sortedUniqueArr = uniqueStrArr.flat().sort();
+    let repeatedItemsCount = 1;
     for (let i = 1; i < sortedUniqueArr.length; i++) {
       if (sortedUniqueArr[i] == sortedUniqueArr[i - 1]) {
+        repeatedItemsCount++;
+      } else {
+        repeatedItemsCount = 1;
+      }
+      if (repeatedItemsCount == repeatingNumber) {
         repeatingChar = sortedUniqueArr[i];
       }
     }
