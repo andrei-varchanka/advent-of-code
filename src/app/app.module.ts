@@ -4,11 +4,13 @@ import { HttpClientModule} from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DayIComponent } from './components/day-i/day-i.component';
+import { DayIiComponent } from './components/day-ii/day-ii.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DayIComponent
+    DayIComponent,
+    DayIiComponent
   ],
   imports: [
     BrowserModule,
