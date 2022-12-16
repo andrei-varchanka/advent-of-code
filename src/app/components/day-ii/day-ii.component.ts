@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './day-ii.component.html',
   styleUrls: ['./day-ii.component.scss']
 })
-export class DayIiComponent implements OnInit {
+export class DayIIComponent implements OnInit {
 
   partnerSignArr = ['A', 'B', 'C'];
   mySignArr = ['X', 'Y', 'Z'];
