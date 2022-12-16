@@ -29,7 +29,7 @@ CrZsJsPPZsGzwwsLwLmpwMDw`;
   }
 
   getPrioritiesSum1(data: string): number {
-    const arr: string[] = data.split('\r\n');
+    const arr: string[] = data.split('\n');
     let sum = 0;
     arr.forEach((item: string) => {
       const firstHalf = item.substring(0, item.length / 2);
@@ -41,7 +41,7 @@ CrZsJsPPZsGzwwsLwLmpwMDw`;
   }
 
   getPrioritiesSum2(data: string): number {
-    const arr: string[] = data.split('\r\n');
+    const arr: string[] = data.split('\n');
     const group3Arr: Array<string[]> = [];
     let i = 0;
     let sum = 0;
