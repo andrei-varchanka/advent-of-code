@@ -1,0 +1,10 @@
+
+<nav>
+  <div class="logo">
+    Advent of code 2022
+  </div>
+  <ul>
+    <li *ngFor="let day of days" [routerLink]="'day-' + day">[{{day}}]</li>
+  </ul>
+</nav>
+<router-outlet></router-outlet>
