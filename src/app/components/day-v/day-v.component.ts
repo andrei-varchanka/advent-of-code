@@ -19,6 +19,7 @@ export class DayVComponent implements OnInit {
   move 1 from 1 to 2`
 
   result1 = '';
+  result2 = '';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -26,11 +27,13 @@ export class DayVComponent implements OnInit {
     this.httpClient.get('assets/input-data/input5.txt', { responseType: 'text' }).subscribe(data => {
       const index = data.indexOf('move');
       const stacksStr = data.slice(0, index);
-      let stacks = this.getStacks(stacksStr);
-      const commandsArr = data.slice(index).split('\n');
+      const stacks = this.getStacks(stacksStr);
+      const commandsArr = data.slice(index).split('\n').filter(command => command);
       const separatedCommandsArr = commandsArr.map(command => command.split(' '));
-      stacks = this.runCommands(stacks, separatedCommandsArr);
-      this.result1 = this.getTopStr(stacks);
+      const finalStacks1 = this.runCommands(stacks, separatedCommandsArr);
+      const finalStacks2 = this.runCommands(stacks, separatedCommandsArr, true);
+      this.result1 = this.getTopStr(finalStacks1);
+      this.result2 = this.getTopStr(finalStacks2);
     });
   }
 
@@ -51,16 +54,22 @@ export class DayVComponent implements OnInit {
     return stacks;
   }
 
-  runCommands(stacks: Array<string[]>, separatedCommandsArr: Array<string[]>): Array<string[]> {
+  runCommands(stacks: Array<string[]>, separatedCommandsArr: Array<string[]>, multiPickUp?: boolean): Array<string[]> {
+    const finalStacks = JSON.parse(JSON.stringify(stacks));
     separatedCommandsArr.forEach(command => {
       const count = +command[1];
       const fromIndex = +command[3] - 1;
       const toIndex = +command[5] - 1;
-      for (let i = 0; i < count; i++) {
-        stacks[toIndex].push(stacks[fromIndex].pop() as string);
+      if (multiPickUp) {
+        finalStacks[toIndex] = finalStacks[toIndex].concat(finalStacks[fromIndex].slice(-count));
+        finalStacks[fromIndex].length = finalStacks[fromIndex].length - count;
+      } else {
+        for (let i = 0; i < count; i++) {
+          finalStacks[toIndex].push(finalStacks[fromIndex].pop() as string);
+        }
       }
     });
-    return stacks;
+    return finalStacks;
   }
 
   getTopStr(stacks: Array<string[]>): string {
