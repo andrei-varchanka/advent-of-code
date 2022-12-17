@@ -9,21 +9,24 @@ import { Component, OnInit } from '@angular/core';
 export class DayVIComponent implements OnInit {
 
   result1 = 0;
+  result2 = 0;
 
-  MARKER_LENGTH = 4;
+  PACKAGE_MARKER_LENGTH = 4;
+  MESSAGE_MARKER_LENGTH = 14;
 
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input6.txt', { responseType: 'text' }).subscribe(data => {
-      this.result1 = this.findMarkerPosition(data);
+      this.result1 = this.findMarkerPosition(data, this.PACKAGE_MARKER_LENGTH);
+      this.result2 = this.findMarkerPosition(data, this.MESSAGE_MARKER_LENGTH);
     });
   }
 
-  findMarkerPosition(str: string): number {
+  findMarkerPosition(str: string, markerLength: number): number {
     let result = 0;
-    let charsArr = str.slice(0, this.MARKER_LENGTH).split('');
-    for (let i = this.MARKER_LENGTH; i < str.length; i++) {
+    let charsArr = str.slice(0, markerLength).split('');
+    for (let i = markerLength; i < str.length; i++) {
       if (this.checkCharsUnique(charsArr)) {
         result = i;
         break;
