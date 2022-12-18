@@ -6,6 +6,7 @@ import { DayIIIComponent } from './components/day-iii/day-iii.component';
 import { DayIVComponent } from './components/day-iv/day-iv.component';
 import { DayVComponent } from './components/day-v/day-v.component';
 import { DayVIComponent } from './components/day-vi/day-vi.component';
+import { DayVIIComponent } from './components/day-vii/day-vii.component';
 
 const routes: Routes = [
   {path: 'day-1', component: DayIComponent},
@@ -13,7 +14,8 @@ const routes: Routes = [
   {path: 'day-3', component: DayIIIComponent},
   {path: 'day-4', component: DayIVComponent},
   {path: 'day-5', component: DayVComponent},
-  {path: 'day-6', component: DayVIComponent}
+  {path: 'day-6', component: DayVIComponent},
+  {path: 'day-7', component: DayVIIComponent}
 ];
 
 @NgModule({
