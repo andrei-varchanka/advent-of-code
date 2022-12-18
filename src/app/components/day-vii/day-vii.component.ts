@@ -10,18 +10,22 @@ export class DayVIIComponent implements OnInit {
 
   result1 = 0;
   result2 = 0;
+  DISK_SIZE = 70000000;
+  REQUIRED_SIZE = 30000000;
+
+  totalFileSize = 0;
+  minimumSizeToDelete = 0;
 
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input7.txt', { responseType: 'text' }).subscribe(data => {
-      this.getDirectoriesSum(data);
+      const obj = this.getStructure(data);
+      this.totalFileSize = this.countDirectorySize(obj);
+      this.minimumSizeToDelete = this.REQUIRED_SIZE - (this.DISK_SIZE - this.totalFileSize);
+      this.result1 = 0;
+      this.countDirectorySize(obj);
     });
-  }
-
-  getDirectoriesSum(data: string): number {
-    const obj = this.getStructure(data);
-    return this.countDirectorySize(obj);
   }
 
   getStructure(data: string): Object {
@@ -41,10 +45,10 @@ export class DayVIIComponent implements OnInit {
       } else {
         //directory content
         if (line.split(' ')[0] == 'dir') {
-          Object.assign(this.getObjectByPath(obj, currentPath), {[line.split(' ')[1]]: {}});
+          Object.assign(this.getObjectByPath(obj, currentPath), { [line.split(' ')[1]]: {} });
         } else {
           //file
-          Object.assign(this.getObjectByPath(obj, currentPath), {[line.split(' ')[1]]: line.split(' ')[0]});
+          Object.assign(this.getObjectByPath(obj, currentPath), { [line.split(' ')[1]]: line.split(' ')[0] });
         }
       }
       console.log('');
@@ -53,7 +57,7 @@ export class DayVIIComponent implements OnInit {
   }
 
   getObjectByPath(obj: Object, path: string[]): Object {
-    return path.reduce( (objProperty, key) => objProperty[key as keyof Object], obj);
+    return path.reduce((objProperty, key) => objProperty[key as keyof Object], obj);
   }
 
   countDirectorySize(obj: Object): number {
@@ -67,6 +71,9 @@ export class DayVIIComponent implements OnInit {
     });
     if (sum <= 100000) {
       this.result1 += sum;
+    }
+    if (this.minimumSizeToDelete && sum >= this.minimumSizeToDelete && (!this.result2 || sum < this.result2)) {
+      this.result2 = sum;
     }
     return sum;
   }
