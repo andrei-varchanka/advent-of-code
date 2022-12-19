@@ -8,12 +8,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DayVIIIComponent implements OnInit {
 
-  data = `30373
-25512
-65332
-33549
-35390`;
-
   result1 = 0;
   result2 = 0;
 
@@ -31,17 +25,12 @@ export class DayVIIIComponent implements OnInit {
     let highestScore = 0;
     for (let i = 0; i < matrix.length; i++) {
       for (let j = 0; j < matrix[i].length; j++) {
-        if (i == 38 && j == 83) {
-          debugger;
-        }
         const [isTreeVisible, score] = this.isTreeVisible(i, j, matrix);
         if (isTreeVisible) {
           count++;
         }
         if (score > highestScore) {
           highestScore = score;
-          console.log(i + ' ' + j);
-          console.log(matrix[i][j]);
         }
       }
     }
