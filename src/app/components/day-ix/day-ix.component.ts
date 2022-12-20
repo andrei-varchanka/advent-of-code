@@ -24,7 +24,7 @@ R 2`;
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input9.txt', { responseType: 'text' }).subscribe(data => {
-      const commands = data.split('\n');
+      const commands = this.data.split('\n');
       let [width, height, startX, startY] = this.countFieldSizes(commands);
       const matrix = Array(height).fill(0).map(()=> Array(width).fill(0));
       this.result1 = this.countTailPositions(commands, matrix, startX, startY);
@@ -79,7 +79,7 @@ R 2`;
       const steps = +command.split(' ')[1];
       for (let i = 0; i < steps; i++) {
         [headPositionX, headPositionY] = this.moveHead(headPositionX, headPositionY, direction);
-        [tailPositionX, tailPositionY] = this.moveTail(tailPositionX, tailPositionY, headPositionX, headPositionY, direction);
+        [tailPositionX, tailPositionY] = this.moveTail(tailPositionX, tailPositionY, headPositionX, headPositionY);
         matrix[tailPositionY][tailPositionX] = 1;
         console.log(matrix);
       }
@@ -104,12 +104,18 @@ R 2`;
     return [positionX, positionY];
   }
 
-  moveTail(tailPositionX: number, tailPositionY: number, headPositionX: number, headPositionY: number, direction: string): [number, number] {
-    if (tailPositionX == headPositionX && Math.abs(headPositionY - tailPositionY) == 2) {
-      direction == 'U' ? tailPositionY-- : tailPositionY++;
+  moveTail(tailPositionX: number, tailPositionY: number, headPositionX: number, headPositionY: number): [number, number] {
+    if (tailPositionX == headPositionX && headPositionY - tailPositionY == 2) {
+      tailPositionY++;
     }
-    if (tailPositionY == headPositionY && Math.abs(headPositionX - tailPositionX) == 2) {
-      direction == 'R' ? tailPositionX++ : tailPositionX--;
+    if (tailPositionX == headPositionX && headPositionY - tailPositionY == -2) {
+      tailPositionY--;
+    }
+    if (tailPositionY == headPositionY && headPositionX - tailPositionX == 2) {
+      tailPositionX++;
+    }
+    if (tailPositionY == headPositionY && headPositionX - tailPositionX == -2) {
+      tailPositionX--;
     }
     if (Math.abs(headPositionX - tailPositionX) == 2 && Math.abs(headPositionY - tailPositionY) == 1
      || Math.abs(headPositionY - tailPositionY) == 2 && Math.abs(headPositionX - tailPositionX) == 1) {
