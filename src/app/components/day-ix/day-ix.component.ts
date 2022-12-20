@@ -82,15 +82,9 @@ export class DayIXComponent implements OnInit {
         // matrix[headPositionY][headPositionX] = 0;
         [headPositionX, headPositionY] = this.moveHead(headPositionX, headPositionY, direction);
         // matrix[headPositionY][headPositionX] = -1;
-        // matrix[tailPositionsY[0]][tailPositionsX[0]] = 0;
-        [tailPositionsX[0], tailPositionsY[0]] = this.moveTail(tailPositionsX[0], tailPositionsY[0], headPositionX, headPositionY);
-        if (tailsCount == 1) {
-          matrix[tailPositionsY[0]][tailPositionsX[0]] = 1;
-        }
-        // matrix[tailPositionsY[0]][tailPositionsX[0]] = 1;
-        for (let j = 1; j < tailsCount; j++) {
+        for (let j = 0; j < tailsCount; j++) {
           // matrix[tailPositionsY[j]][tailPositionsX[j]] = 0;
-          [tailPositionsX[j], tailPositionsY[j]] = this.moveTail(tailPositionsX[j], tailPositionsY[j], tailPositionsX[j - 1], tailPositionsY[j - 1]);
+          [tailPositionsX[j], tailPositionsY[j]] = this.moveTail(tailPositionsX[j], tailPositionsY[j], tailPositionsX[j - 1] || headPositionX, tailPositionsY[j - 1] || headPositionY);
           //matrix[tailPositionsY[j]][tailPositionsX[j]] = j + 1;
           if (j == tailsCount - 1) {
             matrix[tailPositionsY[j]][tailPositionsX[j]] = 1;
