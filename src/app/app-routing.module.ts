@@ -4,6 +4,7 @@ import { DayIComponent } from './components/day-i/day-i.component';
 import { DayIIComponent } from './components/day-ii/day-ii.component';
 import { DayIIIComponent } from './components/day-iii/day-iii.component';
 import { DayIVComponent } from './components/day-iv/day-iv.component';
+import { DayIXComponent } from './components/day-ix/day-ix.component';
 import { DayVComponent } from './components/day-v/day-v.component';
 import { DayVIComponent } from './components/day-vi/day-vi.component';
 import { DayVIIComponent } from './components/day-vii/day-vii.component';
@@ -17,7 +18,8 @@ const routes: Routes = [
   {path: 'day-5', component: DayVComponent},
   {path: 'day-6', component: DayVIComponent},
   {path: 'day-7', component: DayVIIComponent},
-  {path: 'day-8', component: DayVIIIComponent}
+  {path: 'day-8', component: DayVIIIComponent},
+  {path: 'day-9', component: DayIXComponent}
 ];
 
 @NgModule({
