@@ -11,24 +11,24 @@ export class DayIXComponent implements OnInit {
   result1 = 0;
   result2 = 0;
 
-  data = `R 4
-U 4
-L 3
-D 1
-R 4
-D 1
-L 5
-R 2`;
+  height = 0;
+  width = 0;
 
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input9.txt', { responseType: 'text' }).subscribe(data => {
-      const commands = this.data.split('\n');
+      const commands = data.split('\n');
       let [width, height, startX, startY] = this.countFieldSizes(commands);
-      const matrix = Array(height).fill(0).map(()=> Array(width).fill(0));
-      this.result1 = this.countTailPositions(commands, matrix, startX, startY);
+      this.width = width;
+      this.height = height;
+      this.result1 = this.countTailsPositions(commands, startX, startY, 1);
+      this.result2 = this.countTailsPositions(commands, startX, startY, 9);
     });
+  }
+
+  getCleanMatrix() {
+    return Array(this.height).fill(0).map(() => Array(this.width).fill(0))
   }
 
   countFieldSizes(commands: string[]): [number, number, number, number] {
@@ -67,24 +67,39 @@ R 2`;
     return [width, height, startX, startY];
   }
 
-  countTailPositions(commands: string[], matrix: Array<number[]>, startX: number, startY: number): number {
+  countTailsPositions(commands: string[], startX: number, startY: number, tailsCount: number): number {
     let count = 0;
     let headPositionX = startX;
     let headPositionY = startY;
-    let tailPositionX = startX;
-    let tailPositionY = startY;
-    matrix[startY][startX] = 1;
+    let tailPositionsX = new Array(tailsCount).fill(startX);
+    let tailPositionsY = new Array(tailsCount).fill(startY);
+    let matrix = this.getCleanMatrix();
     commands.forEach(command => {
+      // matrix = this.getCleanMatrix();
       const direction = command.split(' ')[0];
       const steps = +command.split(' ')[1];
       for (let i = 0; i < steps; i++) {
+        // matrix[headPositionY][headPositionX] = 0;
         [headPositionX, headPositionY] = this.moveHead(headPositionX, headPositionY, direction);
-        [tailPositionX, tailPositionY] = this.moveTail(tailPositionX, tailPositionY, headPositionX, headPositionY);
-        matrix[tailPositionY][tailPositionX] = 1;
-        console.log(matrix);
+        // matrix[headPositionY][headPositionX] = -1;
+        // matrix[tailPositionsY[0]][tailPositionsX[0]] = 0;
+        [tailPositionsX[0], tailPositionsY[0]] = this.moveTail(tailPositionsX[0], tailPositionsY[0], headPositionX, headPositionY);
+        if (tailsCount == 1) {
+          matrix[tailPositionsY[0]][tailPositionsX[0]] = 1;
+        }
+        // matrix[tailPositionsY[0]][tailPositionsX[0]] = 1;
+        for (let j = 1; j < tailsCount; j++) {
+          // matrix[tailPositionsY[j]][tailPositionsX[j]] = 0;
+          [tailPositionsX[j], tailPositionsY[j]] = this.moveTail(tailPositionsX[j], tailPositionsY[j], tailPositionsX[j - 1], tailPositionsY[j - 1]);
+          //matrix[tailPositionsY[j]][tailPositionsX[j]] = j + 1;
+          if (j == tailsCount - 1) {
+            matrix[tailPositionsY[j]][tailPositionsX[j]] = 1;
+          }
+        }
       }
+      // console.log(matrix);
     });
-    count = matrix.reduce((ac, row) => ac + row.reduce((count, item) => count + item, 0), 0);
+    count = (matrix as any as Array<number[]>).reduce((ac, row) => ac + row.reduce((count, item) => count + item, 0), 0);
     return count;
   }
 
@@ -118,7 +133,8 @@ R 2`;
       tailPositionX--;
     }
     if (Math.abs(headPositionX - tailPositionX) == 2 && Math.abs(headPositionY - tailPositionY) == 1
-     || Math.abs(headPositionY - tailPositionY) == 2 && Math.abs(headPositionX - tailPositionX) == 1) {
+      || Math.abs(headPositionY - tailPositionY) == 2 && Math.abs(headPositionX - tailPositionX) == 1
+      || Math.abs(headPositionX - tailPositionX) == 2 && Math.abs(headPositionY - tailPositionY) == 2) {
       if (headPositionX > tailPositionX && headPositionY > tailPositionY) {
         tailPositionX++;
         tailPositionY++;
