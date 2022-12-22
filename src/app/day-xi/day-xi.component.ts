@@ -38,22 +38,36 @@ Monkey 3:
 
   monkeys: any[] = [];
 
-  monkeyBusinessLevel = 0;
+  monkeyBusinessLevel1 = 0;
+  monkeyBusinessLevel2 = 0;
+
 
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input11.txt', { responseType: 'text' }).subscribe(data => {
-      this.monkeys = data.split('Monkey');
-      this.monkeys.shift();
-      this.monkeys = this.monkeys.map(str => {
-        return this.convertMonkeyStrToObj(str);
-      });
-      console.log(this.monkeys);
-      this.play();
-      this.monkeys.sort((a, b) => b.inspectionTimes - a.inspectionTimes);
-      this.monkeyBusinessLevel = this.monkeys[0].inspectionTimes * this.monkeys[1].inspectionTimes;
+      this.init(data);
+      this.play(20, 'first');
+      this.monkeyBusinessLevel1 = this.getBusinessLevel();
+
+      this.init(data);
+      this.play(10000, 'second');
+      this.monkeyBusinessLevel2 = this.getBusinessLevel();
     });
+  }
+
+  init(data: string) {
+    this.monkeys = data.split('Monkey');
+    this.monkeys.shift();
+    this.monkeys = this.monkeys.map(str => {
+      return this.convertMonkeyStrToObj(str);
+    });
+    console.log(this.monkeys);
+  }
+
+  getBusinessLevel() {
+    this.monkeys.sort((a, b) => b.inspectionTimes - a.inspectionTimes);
+    return this.monkeys[0].inspectionTimes * this.monkeys[1].inspectionTimes;
   }
 
   convertMonkeyStrToObj(str: string) {
@@ -69,13 +83,19 @@ Monkey 3:
     }
   }
 
-  play() {
-    for (let i = 0; i < 20; i++) {
+  play(roundsNumber: number, mode: string) {
+    let modAll = this.monkeys.reduce((ac, monkey) => ac * monkey.test, 1);
+    for (let i = 0; i < roundsNumber; i++) {
       this.monkeys.forEach(monkey => {
         while (monkey.startingItems.length > 0) {
           let item = monkey.startingItems.shift();
           monkey.inspectionTimes++;
-          item = Math.floor(this.changeWorryLevel(item, monkey.operationOperator, monkey.operationOperand) / 3);
+          if (mode == 'first') {
+            item = Math.floor(this.changeWorryLevel(item, monkey.operationOperator, monkey.operationOperand) / 3);
+          } else {
+            item = this.changeWorryLevel(item, monkey.operationOperator, monkey.operationOperand);
+            item = item % modAll;
+          }
           this.monkeys[item % monkey.test ? monkey.ifFalse : monkey.ifTrue].startingItems.push(item);
         }
       });
