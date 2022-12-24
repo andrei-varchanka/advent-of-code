@@ -17,7 +17,7 @@ export class DayXIVComponent implements OnInit {
 
   matrix: string[][] = [[]];
 
-  startPoint = [500, 0];
+  startPoint: number[] = [];
 
   constructor(private httpClient: HttpClient) { }
 
@@ -25,15 +25,18 @@ export class DayXIVComponent implements OnInit {
     this.httpClient.get('assets/input-data/input14.txt', { responseType: 'text' }).subscribe(data => {
       const rockLines = data.split('\n').map(line => line.split(' -> ').map(point => point.split(',').map(value => +value)));
       this.generateCaveMatrix(rockLines);
-      this.result1 = this.startFlow();
+      this.result1 = this.startFlow1();
+      this.generateCaveMatrix(rockLines, true);
+      this.result2 = this.startFlow2();
       console.log(this.matrix.map(row => row.join('')).join('\n'));
     });
   }
 
-  generateCaveMatrix(rockLines: Array<number[][]>) {
+  generateCaveMatrix(rockLines: Array<number[][]>, withFloor?: boolean) {
     let minX = Number.MAX_VALUE;
     let maxX = 0;
     let maxY = 0;
+    this.startPoint = [500, 0];
     rockLines.forEach(rockLine => {
       rockLine.forEach(point => {
         if (point[0] < minX) {
@@ -73,12 +76,16 @@ export class DayXIVComponent implements OnInit {
         }
       }
     }
+    if (withFloor) {
+      this.matrix.push(new Array(width).fill('.'));
+      this.matrix.push(new Array(width).fill('#'));
+    }
   }
 
-  startFlow(): number {
+  startFlow1(): number {
     let count = 0;
     let isFlowing = true;
-    while(isFlowing) {
+    while (isFlowing) {
       let sandPoint = [...this.startPoint];
       let isLanded = false;
       while (!isLanded) {
@@ -107,6 +114,46 @@ export class DayXIVComponent implements OnInit {
         this.matrix[sandPoint[1]][sandPoint[0]] = 'o';
         count++;
       }
+    }
+    return count;
+  }
+
+  startFlow2(): number {
+    let count = 0;
+    while (this.matrix[this.startPoint[1]][this.startPoint[0]] != 'o') {
+      let sandPoint = [...this.startPoint];
+      let isLanded = false;
+      while (!isLanded) {
+        if (this.matrix[sandPoint[1] + 1][sandPoint[0]] == '.') {
+          sandPoint[1]++;
+        } else {
+          if (!this.matrix[sandPoint[1] + 1][sandPoint[0] - 1]) {
+            for (let i = 0; i < this.matrix.length; i++) {
+              this.matrix[i].unshift(i == this.matrix.length - 1 ? '#' : '.');
+            }
+            sandPoint[0]++;
+            this.startPoint[0]++;
+          }
+          if (this.matrix[sandPoint[1] + 1][sandPoint[0] - 1] == '.') {
+            sandPoint[1]++;
+            sandPoint[0]--;
+          } else {
+            if (!this.matrix[sandPoint[1] + 1][sandPoint[0] + 1]) {
+              for (let i = 0; i < this.matrix.length; i++) {
+                this.matrix[i].push(i == this.matrix.length - 1 ? '#' : '.');
+              }
+            }
+            if (this.matrix[sandPoint[1] + 1][sandPoint[0] + 1] == '.') {
+              sandPoint[1]++;
+              sandPoint[0]++;
+            } else {
+              isLanded = true;
+            }
+          }
+        }
+      }
+      this.matrix[sandPoint[1]][sandPoint[0]] = 'o';
+      count++;
     }
     return count;
   }
