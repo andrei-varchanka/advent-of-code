@@ -8,7 +8,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DayXIIComponent implements OnInit {
 
-  // https://www.redblobgames.com/pathfinding/a-star/introduction.html
   // http://theory.stanford.edu/~amitp/GameProgramming/
 
   data = `Sabqponm
