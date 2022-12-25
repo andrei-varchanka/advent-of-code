@@ -14,6 +14,7 @@ import { DayXIComponent } from './day-xi/day-xi.component';
 import { DayXIIComponent } from './day-xii/day-xii.component';
 import { DayXIIIComponent } from './day-xiii/day-xiii.component';
 import { DayXIVComponent } from './day-xiv/day-xiv.component';
+import { DayXVComponent } from './day-xv/day-xv.component';
 
 const routes: Routes = [
   {path: 'day-1', component: DayIComponent},
@@ -29,7 +30,8 @@ const routes: Routes = [
   {path: 'day-11', component: DayXIComponent},
   {path: 'day-12', component: DayXIIComponent},
   {path: 'day-13', component: DayXIIIComponent},
-  {path: 'day-14', component: DayXIVComponent}
+  {path: 'day-14', component: DayXIVComponent},
+  {path: 'day-15', component: DayXVComponent}
 ];
 
 @NgModule({
