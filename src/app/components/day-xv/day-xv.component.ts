@@ -68,9 +68,12 @@ Sensor at x=20, y=1: closest beacon is at x=15, y=3`;
     const sensorData = this.parseCoordinates(data);
 
     const isOurOfAllSensorRanges = (x: number, y: number) => sensorData.every(({ sx, sy, dist }) =>
-      Math.abs(sx - x) + Math.abs(sy - y) > dist
+      this.calculateDistance(x, y, sx, sy) > dist
     );
 
+    // distress beacon has only one possible position so it's located near edge of some sensor area,
+    // otherwise we had more than 1 possible position
+    // so we check only nearest points for every sensor
     for (const { sx, sy, dist } of sensorData) {
       for (const xo of [-1, 1]) {
         for (const yo of [-1, 1]) {

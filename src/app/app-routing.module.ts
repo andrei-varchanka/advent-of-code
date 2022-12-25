@@ -9,12 +9,12 @@ import { DayVComponent } from './components/day-v/day-v.component';
 import { DayVIComponent } from './components/day-vi/day-vi.component';
 import { DayVIIComponent } from './components/day-vii/day-vii.component';
 import { DayVIIIComponent } from './components/day-viii/day-viii.component';
-import { DayXComponent } from './day-x/day-x.component';
-import { DayXIComponent } from './day-xi/day-xi.component';
-import { DayXIIComponent } from './day-xii/day-xii.component';
-import { DayXIIIComponent } from './day-xiii/day-xiii.component';
-import { DayXIVComponent } from './day-xiv/day-xiv.component';
-import { DayXVComponent } from './day-xv/day-xv.component';
+import { DayXComponent } from './components/day-x/day-x.component';
+import { DayXIComponent } from './components/day-xi/day-xi.component';
+import { DayXIIComponent } from './components/day-xii/day-xii.component';
+import { DayXIIIComponent } from './components/day-xiii/day-xiii.component';
+import { DayXIVComponent } from './components/day-xiv/day-xiv.component';
+import { DayXVComponent } from './components/day-xv/day-xv.component';
 
 const routes: Routes = [
   {path: 'day-1', component: DayIComponent},
