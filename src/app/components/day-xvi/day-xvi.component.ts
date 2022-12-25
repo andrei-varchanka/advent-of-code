@@ -73,7 +73,8 @@ Valve JJ has flow rate=21; tunnel leads to valve II`;
     );
   }
 
-  // This is basic pathfinding just to find the time to travel from any valid valve to any other valid valve. Important to prevent moving unproductively into worthless rooms
+  // This is basic pathfinding just to find the time to travel from any valid valve to any other valid valve. 
+  // Important to prevent moving unproductively into worthless rooms
   getLowestCost(start: string, end: string) {
     const queue: { room: string; cost: number; visited: string[] }[] = [
       { room: start, cost: 0, visited: [start] },
@@ -95,7 +96,8 @@ Valve JJ has flow rate=21; tunnel leads to valve II`;
     return -1;
   };
 
-  // I actually found that it was faster to just generate all the possible routes within the time and then process their scores separately as opposed to pathing and calculating as I went. This is mainly because of how Part 2 works, this just allowed more control over ensuring things could be memoized and be smooth enough
+  // I actually found that it was faster to just generate all the possible routes within the time and then process their scores separately as opposed to pathing and calculating as I went. 
+  // This is mainly because of how Part 2 works, this just allowed more control over ensuring things could be memoized and be smooth enough
   makeAllPaths(time: number) {
     const pathList: Set<string> = new Set();
     const getRemainingPath = (
@@ -136,7 +138,6 @@ Valve JJ has flow rate=21; tunnel leads to valve II`;
     return pressureReleased + flowForStep;
   };
 
-  // Takes paths and provides the amount of pressure they can release in the given time. This memoizes paths past a certain point so that the tail end of paths can be sped up. Part 1 simply consists of getting the best path for a single actor moving through and turning valves
   scorePaths(paths: string[][], time: number) {
     const memo: Map<string, number> = new Map();
     const pathScores = paths.map((path) =>

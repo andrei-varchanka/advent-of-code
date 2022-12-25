@@ -19,6 +19,15 @@ import { DayXIIIComponent } from './components/day-xiii/day-xiii.component';
 import { DayXIVComponent } from './components/day-xiv/day-xiv.component';
 import { DayXVComponent } from './components/day-xv/day-xv.component';
 import { DayXVIComponent } from './components/day-xvi/day-xvi.component';
+import { DayXVIIComponent } from './components/day-xvii/day-xvii.component';
+import { DayXVIIIComponent } from './components/day-xviii/day-xviii.component';
+import { DayXIXComponent } from './components/day-xix/day-xix.component';
+import { DayXXComponent } from './components/day-xx/day-xx.component';
+import { DayXXIComponent } from './components/day-xxi/day-xxi.component';
+import { DayXXIIComponent } from './components/day-xxii/day-xxii.component';
+import { DayXXIIIComponent } from './components/day-xxiii/day-xxiii.component';
+import { DayXXIVComponent } from './components/day-xxiv/day-xxiv.component';
+import { DayXXVComponent } from './components/day-xxv/day-xxv.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +47,16 @@ import { DayXVIComponent } from './components/day-xvi/day-xvi.component';
     DayXIIIComponent,
     DayXIVComponent,
     DayXVComponent,
-    DayXVIComponent
+    DayXVIComponent,
+    DayXVIIComponent,
+    DayXVIIIComponent,
+    DayXIXComponent,
+    DayXXComponent,
+    DayXXIComponent,
+    DayXXIIComponent,
+    DayXXIIIComponent,
+    DayXXIVComponent,
+    DayXXVComponent
   ],
   imports: [
     BrowserModule,
