@@ -33,13 +33,11 @@ export class DayXVIIIComponent implements OnInit {
   minZ: number = Infinity;
   maxZ: number = -Infinity;
 
-  visitedBlocks: number[][] = [];
-
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
     this.httpClient.get('assets/input-data/input18.txt', { responseType: 'text' }).subscribe(data => {
-      const coordinates = data.split('\n').map(item => item.split(',').map(Number));
+      const coordinates = this.data.split('\n').map(item => item.split(',').map(Number));
       [this.minX, this.maxX] = this.getMinMaxCoordinates(coordinates, 0);
       [this.minY, this.maxY] = this.getMinMaxCoordinates(coordinates, 1);
       [this.minZ, this.maxZ] = this.getMinMaxCoordinates(coordinates, 2);
@@ -61,19 +59,23 @@ export class DayXVIIIComponent implements OnInit {
   countSurfaceArea2(coordinates: number[][]) {
     let totalSurfaceArea = 0;
     const stack = [[this.minX - 1, this.minY - 1, this.minZ - 1]];
+    const visitedBlocks = new Set<string>();
     while (stack.length) {
-      const [x, y, z] = stack.pop()!;
-      const block = [x, y, z];
-      if (this.visitedBlocks.find(vb => vb.join(',') == block.join(','))) continue;
-      this.visitedBlocks.push([x, y, z]);
+      const block = stack.pop()!;
+      if (visitedBlocks.has(block.join(','))) {
+        continue;
+      }
+      visitedBlocks.add(block.join(','));
 
-      for (const [nx, ny, nz] of this.getNeighbors(block)) {
-        if (nx < this.minX - 1 || nx > this.maxX + 1 || ny < this.minY - 1 || ny > this.maxY + 1 || nz < this.minZ - 1 || nz > this.maxZ + 1) continue;
-
-        if (coordinates.find(coord => coord.join(',') == [nx, ny, nz].join(','))) {
+      for (const neighbor of this.getNeighbors(block)) {
+        let [nx, ny, nz] = neighbor;
+        if (nx < this.minX - 1 || nx > this.maxX + 1 || ny < this.minY - 1 || ny > this.maxY + 1 || nz < this.minZ - 1 || nz > this.maxZ + 1) {
+          continue;
+        }
+        if (coordinates.find(coord => coord.join(',') == neighbor.join(','))) {
           totalSurfaceArea++;
-        } else if (!this.visitedBlocks.find(vb => vb.join(',') == [nx, ny, nz].join(','))) {
-          stack.push([nx, ny, nz]);
+        } else if (!visitedBlocks.has(neighbor.join(','))) {
+          stack.push(neighbor);
         }
       }
     }
