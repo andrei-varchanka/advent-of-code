@@ -37,154 +37,267 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
 
   blueprints: Array<Blueprint> = [];
 
+  input: any[] = [];
+
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
+    console.time("ExecutionTime");
     this.httpClient.get('assets/input-data/input19.txt', { responseType: 'text' }).subscribe(data => {
-      this.parseInput(this.data);
+      this.parseInput(data);
 
-      this.blueprints.forEach((blueprint, i) => {
-        const geodeCount = this.collectGeodes(blueprint, {
-          remainingTime: 24,
-          robots: {
-            ore: 1,
-            clay: 0,
-            obsidian: 0,
-            geode: 0
-          },
-          resources: {
-            ore: 0,
-            clay: 0,
-            obsidian: 0,
-            geode: 0
-          }
-        }, 0);
-        console.log(geodeCount);
-        this.result1 += geodeCount * (i + 1);
-      });
+      // this.blueprints.forEach((blueprint, i) => {
+      //   const geodeCount = this.collectGeodes(blueprint, {
+      //     remainingTime: 24,
+      //     robots: {
+      //       ore: 1,
+      //       clay: 0,
+      //       obsidian: 0,
+      //       geode: 0
+      //     },
+      //     resources: {
+      //       ore: 0,
+      //       clay: 0,
+      //       obsidian: 0,
+      //       geode: 0
+      //     }
+      //   });
+      //   console.log(geodeCount);
+      //   this.result1 += geodeCount * (i + 1);
+      // });
+      let i = 1;
+      for (let blueprint of this.input) {
+        let score = this.nextOptimalRobot(
+          { ore: 0, orePerSecond: 1 },
+          { clay: 0, clayPerSecond: 0 },
+          { obsidian: 0, obsidianPerSecond: 0 },
+          { geode: 0, geodePerSecond: 0 },
+          24,
+          blueprint
+        );
+        console.log(score);
+        this.result1 += score * i++;
+      }
+      console.timeEnd("ExecutionTime");
     });
   }
 
   parseInput(data: string) {
-    this.blueprints = data.split('\n').map(blueprint => {
-      const arr = blueprint.split(' ');
-      return {
-        ore: {
-          ore: +arr[6],
-          clay: 0,
-          obsidian: 0,
-          geode: 0
-        },
-        clay: {
-          ore: +arr[12],
-          clay: 0,
-          obsidian: 0,
-          geode: 0
-        },
-        obsidian: {
-          ore: +arr[18],
-          clay: +arr[21],
-          obsidian: 0,
-          geode: 0
-        },
-        geode: {
-          ore: +arr[27],
-          clay: 0,
-          obsidian: +arr[30],
-          geode: 0
-        }
-      };
-    });
-  }
+    this.input = data
+      .trim()
+      .split("\n")
+      .map((line) => {
+        let split = line.split(" ");
+        let robotCosts = [];
+        // Ore robot
+        let type = split[3];
+        let resource = split[7].slice(0, -1);
+        let amount = parseInt(split[6]);
+        let cost = [{ resource, amount }];
+        robotCosts.push({ type, cost });
+        // Clay robot
+        type = split[9];
+        resource = split[13].slice(0, -1);
+        amount = parseInt(split[12]);
+        cost = [{ resource, amount }];
+        robotCosts.push({ type, cost });
+        // Obsidian robot
+        type = split[15];
+        let resource1 = split[19];
+        let amount1 = parseInt(split[18]);
+        let resource2 = split[22].slice(0, -1);
+        let amount2 = parseInt(split[21]);
+        cost = [
+          { resource: resource1, amount: amount1 },
+          { resource: resource2, amount: amount2 },
+        ];
+        robotCosts.push({ type, cost });
+        // Geode robot
+        type = split[24];
+        resource1 = split[28];
+        amount1 = parseInt(split[27]);
+        resource2 = split[31].slice(0, -1);
+        amount2 = parseInt(split[30]);
+        cost = [
+          { resource: resource1, amount: amount1 },
+          { resource: resource2, amount: amount2 },
+        ];
+        robotCosts.push({ type, cost });
 
-  collectGeodes(blueprint: Blueprint, state: State, maxGeodes: number): number {
-    while (state.remainingTime > 0) {
-      maxGeodes = Math.max(state.resources.geode, maxGeodes);
-
-      let maxOreRobotCount = 0;
-      Object.values(blueprint).forEach(cost => {
-        maxOreRobotCount = Math.max(cost.ore, maxOreRobotCount);
+        return robotCosts;
       });
-      const maxRobotCounts: Resources = {
-        ore: maxOreRobotCount,
-        clay: blueprint.obsidian.clay,
-        obsidian: blueprint.geode.obsidian,
-        geode: Infinity
-      };
-
-      if (state.resources.geode + state.robots.geode * state.remainingTime + this.triangleSum(state.remainingTime) < maxGeodes) {
-        state.remainingTime = 0;
-      }
-      const availableRobotTypes: string[] = this.getAvailableRobotTypes(blueprint, state);
-      availableRobotTypes.push(''); // don't make any robot
-      let maxGeodesAfterPurchase = 0;
-      let mostEfficientRobotType = '';
-      if (availableRobotTypes.includes('geode')) {
-        mostEfficientRobotType = 'geode';
-      } else {
-        availableRobotTypes.forEach(robotType => {
-          if (state.robots[robotType as keyof Resources] <= maxRobotCounts[robotType as keyof Resources]) {
-            let tempState = JSON.parse(JSON.stringify(state));
-            this.spendMinute(blueprint, tempState, robotType);
-            let collectedGeodes = this.collectGeodes(blueprint, tempState, maxGeodesAfterPurchase);
-            if (collectedGeodes > maxGeodesAfterPurchase) {
-              maxGeodesAfterPurchase = collectedGeodes;
-              mostEfficientRobotType = robotType;
-            }
-          }
-        });
-      }
-      this.spendMinute(blueprint, state, mostEfficientRobotType);
-
-    }
-    return state.resources.geode;
+    // this.blueprints = data.split('\n').map(blueprint => {
+    //   const arr = blueprint.split(' ');
+    //   return {
+    //     ore: {
+    //       ore: +arr[6],
+    //       clay: 0,
+    //       obsidian: 0,
+    //       geode: 0
+    //     },
+    //     clay: {
+    //       ore: +arr[12],
+    //       clay: 0,
+    //       obsidian: 0,
+    //       geode: 0
+    //     },
+    //     obsidian: {
+    //       ore: +arr[18],
+    //       clay: +arr[21],
+    //       obsidian: 0,
+    //       geode: 0
+    //     },
+    //     geode: {
+    //       ore: +arr[27],
+    //       clay: 0,
+    //       obsidian: +arr[30],
+    //       geode: 0
+    //     }
+    //   };
+    // });
   }
 
+  canAfford(cost: any[], ore: number, clay: number, obsidian: number) {
+    let oreCost = cost.find((c) => c.resource === "ore");
+    let clayCost = cost.find((c) => c.resource === "clay");
+    let obsidianCost = cost.find((c) => c.resource === "obsidian");
 
-  triangleSum(n: number) {
-    let a = 0;
-    for (let i = 1; i <= n; i++) {
-      a += i;
-    }
-    return a;
+    return (
+      (oreCost === undefined || oreCost.amount <= ore) &&
+      (clayCost === undefined || clayCost.amount <= clay) &&
+      (obsidianCost === undefined || obsidianCost.amount <= obsidian)
+    );
   };
 
-  getAvailableRobotTypes(blueprint: Blueprint, state: State): string[] {
-    const availableRobotTypes: string[] = [];
-    Object.keys(blueprint).forEach(robotType => {
-      const robotCost: Resources = blueprint[robotType as keyof Blueprint];
-      let canAfford = Object.keys(robotCost).every(requiredResourceType =>
-        state.resources[requiredResourceType as keyof Resources] >= robotCost[requiredResourceType as keyof Resources]);
-      if (canAfford) {
-        availableRobotTypes.push(robotType);
+  craftRobot = (
+    robotCost: any[],
+    oreProduction: { ore: number, orePerSecond: number },
+    clayProduction: { clay: number, clayPerSecond: number },
+    obsidianProduction: { obsidian: number, obsidianPerSecond: number },
+    newTimeLeft: number) => {
+    let { ore, orePerSecond } = oreProduction;
+    let { clay, clayPerSecond } = clayProduction;
+    let { obsidian, obsidianPerSecond } = obsidianProduction;
+
+    while (!this.canAfford(robotCost, ore, clay, obsidian) && newTimeLeft > 0) {
+      ore += orePerSecond;
+      clay += clayPerSecond;
+      obsidian += obsidianPerSecond;
+      newTimeLeft--;
+    }
+    ore += orePerSecond;
+    clay += clayPerSecond;
+    obsidian += obsidianPerSecond;
+    newTimeLeft--;
+    for (let cost of robotCost) {
+      if (cost.resource === "ore") ore -= cost.amount;
+
+      if (cost.resource === "clay") clay -= cost.amount;
+      if (cost.resource === "obsidian") obsidian -= cost.amount;
+    }
+
+    return { ore, clay, obsidian, newTimeLeft };
+  };
+
+  nextOptimalRobot(
+    oreProduction: { ore: number, orePerSecond: number },
+    clayProduction: { clay: number, clayPerSecond: number },
+    obsidianProduction: { obsidian: number, obsidianPerSecond: number },
+    geodeProduction: { geode: number, geodePerSecond: number },
+    timeLeft: number,
+    blueprint: any[]
+  ) {
+    let geodeProduced = 0;
+    for (let robot of blueprint) {
+      if (robot.type === "ore" && timeLeft < 16) continue;
+      if (robot.type === "clay" && timeLeft < 6) continue;
+      if (robot.type === "obsidian" && timeLeft < 3) continue;
+      if (robot.type === "geode" && timeLeft < 2) continue;
+      let { ore, clay, obsidian, newTimeLeft } = this.craftRobot(
+        robot.cost,
+        oreProduction,
+        clayProduction,
+        obsidianProduction,
+        timeLeft
+      );
+      if (newTimeLeft <= 0) {
+        continue;
       }
-    });
-    return availableRobotTypes;
-  }
 
-  spendMinute(blueprint: Blueprint, state: State, robotTypeToCreate: string) {
-    if (robotTypeToCreate) {
-      // spend resources and start building robot 
-      const cost: Resources = blueprint[robotTypeToCreate as keyof Blueprint];
-      Object.keys(cost).forEach(resourceType => {
-        state.resources[resourceType as keyof Resources] -= cost[resourceType as keyof Resources];
-      });
+      let newOreProduction = { ...oreProduction };
+      let newClayProduction = { ...clayProduction };
+      let newObsidianProduction = { ...obsidianProduction };
+      let newGeodeProduction = { ...geodeProduction };
+      if (robot.type === "ore") newOreProduction.orePerSecond++;
+      if (robot.type === "clay") newClayProduction.clayPerSecond++;
+      if (robot.type === "obsidian") newObsidianProduction.obsidianPerSecond++;
+      if (robot.type === "geode") newGeodeProduction.geodePerSecond++;
+      newOreProduction.ore = ore;
+      newClayProduction.clay = clay;
+      newObsidianProduction.obsidian = obsidian;
+      let score = robot.type === "geode" ? newTimeLeft : 0;
+
+      score += this.nextOptimalRobot(
+        newOreProduction,
+        newClayProduction,
+        newObsidianProduction,
+        newGeodeProduction,
+        newTimeLeft,
+        blueprint
+      );
+
+      if (score > geodeProduced) {
+        geodeProduced = score;
+      }
     }
+    return geodeProduced;
+  };
 
-    this.collectResourcesPerMinute(state);
+  // craftRobot(robotType: string, blueprint: Blueprint, state: State) {
+  //   const cost: Resources = blueprint[robotType as keyof Blueprint];
+  //   while (!this.canAfford(cost, state) && state.remainingTime > 0) {
+  //     this.collectResourcesPerMinute(state);
+  //   }
+  //   Object.keys(cost).forEach(resourceType => {
+  //     state.resources[resourceType as keyof Resources] -= cost[resourceType as keyof Resources];
+  //   });
+  //   this.collectResourcesPerMinute(state);
+  //   state.robots[robotType as keyof Resources]++;
+  // };
 
-    if (robotTypeToCreate) {
-      //  robot is ready 
-      state.robots[robotTypeToCreate as keyof Resources]++;
-    }
-  }
+  // collectGeodes(blueprint: Blueprint, state: State): number {
+  //   let geodeProduced = 0;
+  //   for (let robotType of Object.keys(blueprint)) {
+  //     if (robotType === "ore" && state.remainingTime < 16) continue;
+  //     if (robotType === "clay" && state.remainingTime < 6) continue;
+  //     if (robotType === "obsidian" && state.remainingTime < 3) continue;
+  //     if (robotType === "geode" && state.remainingTime < 2) continue;
+  //     let tempState = JSON.parse(JSON.stringify(state));
+  //     this.craftRobot(robotType, blueprint, tempState);
+  //     if (tempState.remainingTime <= 0) {
+  //       continue;
+  //     }
 
-  collectResourcesPerMinute(state: State) {
-    Object.keys(state.robots).forEach(resourceType => {
-      state.resources[resourceType as keyof Resources] += state.robots[resourceType as keyof Resources];
-    });
-    state.remainingTime--;
-    // console.log(state.remainingTime);
-  }
+  //     let score = robotType === "geode" ? state.remainingTime : 0;
+  //     score += this.collectGeodes(blueprint, tempState);
+  //     if (score > geodeProduced) {
+  //       geodeProduced = score;
+  //     }
+  //   }
+  //   return geodeProduced;
+  // }
+
+  // canAfford(cost: Resources, state: State): boolean {
+  //   return Object.keys(cost).every(requiredResourceType =>
+  //     state.resources[requiredResourceType as keyof Resources] >= cost[requiredResourceType as keyof Resources]);
+  // }
+
+  // collectResourcesPerMinute(state: State) {
+  //   Object.keys(state.robots).forEach(resourceType => {
+  //     state.resources[resourceType as keyof Resources] += state.robots[resourceType as keyof Resources];
+  //   });
+  //   state.remainingTime--;
+  //   // console.log(state.remainingTime);
+  // }
 
 }
