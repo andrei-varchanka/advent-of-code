@@ -92,10 +92,10 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
     while (stack.length) {
       const next = stack.pop()!;
       let { ore, clay, obsidian, geode, oreRobots, clayRobots, obsidianRobots, geodeRobots, minutesLeft } = next;
-
       best = Math.max(best, geode)
-      if (minutesLeft === 0) continue;
-
+      if (minutesLeft === 0) {
+        continue;
+      } 
 
       const maxOreCost = Math.max(oreBotReq.ore, clayBotReq.ore, obsidianBotReq.ore, geodeBotReq.ore);
 
@@ -110,7 +110,9 @@ Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsid
 
 
       const key = [ore, clay, obsidian, geode, oreRobots, clayRobots, obsidianRobots, geodeRobots, minutesLeft].join(',');
-      if (seen.has(key)) continue;
+      if (seen.has(key)) {
+        continue;
+      }
       seen.add(key);
       const newState = {
         ore: ore + oreRobots,
