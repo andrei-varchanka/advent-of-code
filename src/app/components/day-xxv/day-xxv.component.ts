@@ -8,6 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DayXXVComponent implements OnInit {
 
+  result1: number = 0;
+
+  result2: number = 0;
+
   constructor(private httpClient: HttpClient) { }
 
   ngOnInit(): void {
