@@ -16,8 +16,6 @@ export class DayXXIVComponent implements OnInit {
 
   result2: number = 0;
 
-  testInput = false;
-
   rows: number = 0;
   columns: number = 0;
   start: Position = [0, 0];
