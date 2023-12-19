@@ -7,9 +7,4 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-  days = Array.from({length: 25}, (_, i) => i + 1)
-
-  constructor() {
-  }
-
 }

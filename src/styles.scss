@@ -5,3 +5,26 @@ body {
   font-family: 'Source Code Pro', monospace;
   font-size: 14pt;
 }
+
+nav {
+  display: flex;
+  margin: 8px 0;
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+a, li {
+  cursor: pointer;
+  color: #009900;
+  
+  &:hover, &.selected {
+    color: #99ff99;
+  }
+}

@@ -1,0 +1,15 @@
+<header>
+  <div class="logo">Advent of code</div>
+  <nav>
+    <span class="label">Year: </span>
+    <ul>
+      <li *ngFor="let year of years" [class.selected]="selectedYear == year" (click)="selectDate(year, null)">[{{year}}]</li>
+    </ul>
+  </nav>
+  <nav>
+    <span class="label">Day: </span>
+    <ul>
+      <li *ngFor="let day of days" [class.selected]="selectedDay == day" (click)="selectDate(null, day)">[{{day}}]</li>
+    </ul>
+  </nav>
+</header>
