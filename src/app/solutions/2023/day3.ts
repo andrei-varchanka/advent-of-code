@@ -3,7 +3,7 @@ import { Solver } from "src/app/models/solver.model";
 
 type Coordinate = { x: number, y: number };
 
-export default class Day01 extends Solver {
+export default class Day03 extends Solver {
 
   data = `467....114
 ...*......
