@@ -2,7 +2,7 @@ import { Solver } from "src/app/models/solver.model";
 
 export default class Day04 extends Solver {
 
-data = `seeds: 79 14 55 13
+  data = `seeds: 79 14 55 13
 
 seed-to-soil map:
 50 98 2
@@ -37,14 +37,32 @@ humidity-to-location map:
 56 93 4`;
 
   public override part1(rawInput: string) {
-    const dataBlocks = rawInput.split('\r\n\r\n');
+    // const dataBlocks = rawInput.split('\r\n\r\n');
+    const dataBlocks = this.data.split('\n\n');
     let numbers = dataBlocks[0].split(': ')[1].split(' ').map(i => +i);
-    for (let i = 1; i < dataBlocks.length; i++) {
+    dataBlocks.shift(); // remove seeds
+    numbers = this.doMapping(dataBlocks, numbers);
+    return Math.min(...numbers);
+  }
+
+  public override part2(rawInput: string) {
+    const dataBlocks = this.data.split('\n\n');
+    // const dataBlocks = rawInput.split('\r\n\r\n');
+    let ranges = dataBlocks[0].split(': ')[1].split(' ').map(i => +i);
+    let numbers: number[] = this.getNumbersFromRanges(ranges);
+    dataBlocks.shift(); // remove seeds
+    numbers = this.doMapping(dataBlocks, numbers);
+    return Math.min(...numbers);
+    // return 0;
+  }
+
+  doMapping(dataBlocks: string[], initialNumbers: number[]): number[] {
+    let numbers = initialNumbers;
+    for (let i = 0; i < dataBlocks.length; i++) {
       const mapping = this.getMappingFromStr(dataBlocks[i]);
       numbers = this.getDestinationNumbers(numbers, mapping);
-      console.log(numbers);
     }
-    return Math.min(...numbers);
+    return numbers;
   }
 
   getMappingFromStr(mappingStr: string): number[][] {
@@ -69,10 +87,16 @@ humidity-to-location map:
     });
   }
 
-  public override part2(rawInput: string) {
-    const arr = rawInput.split('\n');
-    let cards = [];
-
-    return cards.length;
+  getNumbersFromRanges(ranges: number[]): number[] {
+    let numbers: number[] = [];
+    for (let i = 0; i < ranges.length - 1;) {
+      const startValue = ranges[i];
+      const rangeLength = ranges[i + 1];
+      for (let j = startValue; j < startValue + rangeLength; j++) {
+        numbers.push(j);
+      }
+      i += 2;
+    }
+    return numbers;
   }
 }
