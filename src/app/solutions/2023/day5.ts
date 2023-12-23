@@ -49,11 +49,23 @@ humidity-to-location map:
     const dataBlocks = this.data.split('\n\n');
     // const dataBlocks = rawInput.split('\r\n\r\n');
     let ranges = dataBlocks[0].split(': ')[1].split(' ').map(i => +i);
-    let numbers: number[] = this.getNumbersFromRanges(ranges);
     dataBlocks.shift(); // remove seeds
-    numbers = this.doMapping(dataBlocks, numbers);
-    return Math.min(...numbers);
-    // return 0;
+    let minValue = Number.MAX_VALUE;
+    for (let i = 0; i < ranges.length;) {
+      const startValue = ranges[i];
+      const endValue = startValue + ranges[i + 1];
+      for (let j = startValue; j < endValue; j++) {
+        let number = j;
+        for (let k = 0; k < dataBlocks.length; k++) {
+          const mapping = this.getMappingFromStr(dataBlocks[k]);
+          number = this.getDestinationNumber(number, mapping);
+        }
+        minValue = number < minValue ? number : minValue;
+        console.log(minValue);
+      }
+      i += 2;
+    }
+    return minValue;
   }
 
   doMapping(dataBlocks: string[], initialNumbers: number[]): number[] {
@@ -72,19 +84,21 @@ humidity-to-location map:
   }
 
   getDestinationNumbers(sourceNumbers: number[], mapping: number[][]): number[] {
-    return sourceNumbers.map(sourceNumber => {
-      let destinationNumber: number | null = null;
-      mapping.forEach(range => {
-        const baseDestination = range[0];
-        const baseSource = range[1];
-        const rangeLength = range[2];
-        if (sourceNumber >= baseSource && sourceNumber < baseSource + rangeLength) {
-          const bias = sourceNumber - baseSource;
-          destinationNumber = baseDestination + bias;
-        }
-      })
-      return destinationNumber || sourceNumber;
-    });
+    return sourceNumbers.map(sourceNumber => this.getDestinationNumber(sourceNumber, mapping));
+  }
+
+  getDestinationNumber(sourceNumber: number, mapping: number[][]): number {
+    let destinationNumber: number | null = null;
+    mapping.forEach(range => {
+      const baseDestination = range[0];
+      const baseSource = range[1];
+      const rangeLength = range[2];
+      if (sourceNumber >= baseSource && sourceNumber < baseSource + rangeLength) {
+        const bias = sourceNumber - baseSource;
+        destinationNumber = baseDestination + bias;
+      }
+    })
+    return destinationNumber || sourceNumber;
   }
 
   getNumbersFromRanges(ranges: number[]): number[] {
