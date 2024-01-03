@@ -37,8 +37,8 @@ humidity-to-location map:
 56 93 4`;
 
   public override part1(rawInput: string) {
-    // const dataBlocks = rawInput.split('\r\n\r\n');
-    const dataBlocks = this.data.split('\n\n');
+    const dataBlocks = rawInput.split('\r\n\r\n');
+    // const dataBlocks = this.data.split('\n\n');
     let numbers = dataBlocks[0].split(': ')[1].split(' ').map(i => +i);
     dataBlocks.shift(); // remove seeds
     numbers = this.doMapping(dataBlocks, numbers);
@@ -46,8 +46,8 @@ humidity-to-location map:
   }
 
   public override part2(rawInput: string) {
-    const dataBlocks = this.data.split('\n\n');
-    // const dataBlocks = rawInput.split('\r\n\r\n');
+    // const dataBlocks = this.data.split('\n\n');
+    const dataBlocks = rawInput.split('\r\n\r\n');
     let ranges = dataBlocks[0].split(': ')[1].split(' ').map(i => +i);
     dataBlocks.shift(); // remove seeds
     let minValue = Number.MAX_VALUE;
