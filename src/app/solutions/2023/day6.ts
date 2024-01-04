@@ -1,6 +1,6 @@
 import { Solver } from "src/app/models/solver.model";
 
-export default class Day04 extends Solver {
+export default class Day06 extends Solver {
 
   data = `Time:      7  15   30
 Distance:  9  40  200`;

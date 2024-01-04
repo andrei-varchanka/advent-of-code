@@ -1,6 +1,6 @@
 import { Solver } from "src/app/models/solver.model";
 
-export default class Day04 extends Solver {
+export default class Day05 extends Solver {
 
   data = `seeds: 79 14 55 13
 

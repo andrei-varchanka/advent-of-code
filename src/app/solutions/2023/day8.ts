@@ -8,7 +8,7 @@ function* loopedArrGen(arr: any[]) {
   }
 }
 
-export default class Day04 extends Solver {
+export default class Day08 extends Solver {
 
 data = `LR
 

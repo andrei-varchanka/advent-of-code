@@ -16,7 +16,7 @@ interface Hand {
   type: HandType
 }
 
-export default class Day04 extends Solver {
+export default class Day07 extends Solver {
 
   data = `32T3K 765
 T55J5 684

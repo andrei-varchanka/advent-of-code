@@ -1,14 +1,6 @@
 import { Solver } from "src/app/models/solver.model";
 
-function* loopedArrGen(arr: any[]) {
-  let index = 0;
-  while (true) {
-    yield arr[index];
-    index = (index + 1) % arr.length;
-  }
-}
-
-export default class Day04 extends Solver {
+export default class Day09 extends Solver {
 
   data = `0 3 6 9 12 15
 1 3 6 10 15 21
