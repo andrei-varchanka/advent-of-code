@@ -15,6 +15,8 @@ export default class Day11 extends Solver {
 .......#..
 #...#.....`;
 
+  multiplier = 1000000;
+
   public override part1(rawInput: string) {
     // let matrix = this.data.split('\n').map(line => line.split(''));
     let matrix = rawInput.split('\r\n').map(line => line.split(''));
@@ -26,8 +28,18 @@ export default class Day11 extends Solver {
   }
 
   public override part2(rawInput: string) {
+    // let matrix = this.data.split('\n').map(line => line.split(''));
+    let matrix = rawInput.split('\r\n').map(line => line.split(''));
+    const [emptyRows, emptyColumns] = this.findEmptyLines(matrix);
+    let coordinates = this.geGalaxiesCoordinates(matrix);
+    coordinates = coordinates.map(coordinate => {
+      const emptyRowsCountBefore = emptyRows.slice(0, coordinate.x).reduce((acc, value) => acc += +value, 0);
+      const emptyColumnsCountBefore = emptyColumns.slice(0, coordinate.y).reduce((acc, value) => acc += +value, 0);
 
-    return 0;
+      return { x: coordinate.x + emptyRowsCountBefore * (this.multiplier - 1), y: coordinate.y + emptyColumnsCountBefore * (this.multiplier - 1) };
+    });
+    console.log(matrix);
+    return this.countDistances(coordinates);
   }
 
   findEmptyLines(matrix: string[][]): [Array<boolean>, Array<boolean>] {
@@ -73,7 +85,7 @@ export default class Day11 extends Solver {
     for (let i = 0; i < matrix.length; i++) {
       for (let j = 0; j < matrix[i].length; j++) {
         if (matrix[i][j] == '#') {
-          coordinates.push({x: i, y: j});
+          coordinates.push({ x: i, y: j });
         }
       }
     }
