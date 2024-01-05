@@ -9,106 +9,59 @@ export default class Day12 extends Solver {
 ????.######..#####. 1,6,5
 ?###???????? 3,2,1`;
 
-  public override part1(rawInput: string) {
-    let arrangements = 0;
-    // const lines = rawInput.split('\r\n');
-    const lines = this.data.split('\n');
+  cache = new Map<string, number>();
 
-    for (const line of lines) {
-      const [str, numsS] = line.split(" ");
-      const nums = numsS.split(",").map(num => +num);
-      arrangements += this.countWays(str, nums);
-    }
-    return arrangements;
+  public override part1(rawInput: string) {
+    const lines = rawInput.split('\r\n');
+    // const lines = this.data.split('\n');
+    let arrangementsCount = 0;
+    lines.forEach(line => {
+      const [row, numbersStr] = line.split(' ');
+      const numbers = numbersStr.split(',').map(i => +i);
+      arrangementsCount += this.countWays(row, numbers);
+    })
+    return arrangementsCount;
   }
 
   public override part2(rawInput: string) {
-    let arrangements = 0;
-    // const lines = rawInput.split('\r\n');
-    const lines = this.data.split('\n');
-
-    for (const line of lines) {
-      const [str, numsS] = line.split(" ");
-      const nums = numsS.split(",").map(num => +num);
-
+    const lines = rawInput.split('\r\n');
+    // const lines = this.data.split('\n');
+    let arrangementsCount = 0;
+    lines.forEach(line => {
+      const [str, numStr] = line.split(' ');
+      const nums = numStr.split(",").map(num => +num);
       const strExpanded = [str, str, str, str, str].join("?");
       const numsExpanded = [...nums, ...nums, ...nums, ...nums, ...nums];
-      arrangements += this.countWays(strExpanded, numsExpanded);
-    }
-    return arrangements;
+      arrangementsCount += this.countWays(strExpanded, numsExpanded);
+    })
+    return arrangementsCount;
   }
 
-  memoize<Args extends unknown[], Result>(func: (...args: Args) => Result): (...args: Args) => Result {
-    const stored = new Map<string, Result>();
+  countWays = (row: string, ns: number[]): number => {
+    row = row.replace(/^\.+|\.+$/, '');
+    if (row === '') return ns.length ? 0 : 1;
+    if (!ns.length) return row.includes('#') ? 0 : 1;
+    const key = [row, ns].join(' ');
+    if (this.cache.has(key)) return this.cache.get(key)!;
 
-    return (...args) => {
-      const k = JSON.stringify(args);
-      if (stored.has(k)) {
-        return stored.get(k)!;
+    let result = 0;
+    const damaged = row.match(/^#+(?=\.|$)/);
+    if (damaged) {
+      if (damaged[0].length === ns[0]) {
+        result += this.countWays(row.slice(ns[0]), ns.slice(1));
       }
-      const result = func(...args);
-      stored.set(k, result);
-      return result;
-    };
-  }
-
-  sum(...nums: number[] | (readonly number[])[]): number {
-    let tot = 0;
-    for (const x of nums) {
-      if (typeof x === "number") {
-        tot += x;
-      } else {
-        for (const y of x) {
-          tot += y;
-        }
+    } else if (row.includes('?')) {
+      const total = ns.reduce(this.sum);
+      result += this.countWays(row.replace('?', '.'), ns);
+      if ((row.match(/#/g) || []).length < total) {
+        result += this.countWays(row.replace('?', '#'), ns);
       }
     }
-    return tot;
+    this.cache.set(key, result);
+    return result;
   }
 
-  countWays = this.memoize(
-    (line: string, runs: readonly number[]): number => {
-      if (line.length === 0) {
-        if (runs.length === 0) {
-          return 1;
-        }
-        return 0;
-      }
-      if (runs.length === 0) {
-        for (let i = 0; i < line.length; i++) {
-          if (line[i] === "#") {
-            return 0;
-          }
-        }
-        return 1;
-      }
-
-      if (line.length < this.sum(runs) + runs.length - 1) {
-        // The line is not long enough for all runs
-        return 0;
-      }
-
-      if (line[0] === ".") {
-        return this.countWays(line.slice(1), runs);
-      }
-      if (line[0] === "#") {
-        const [run, ...leftoverRuns] = runs;
-        for (let i = 0; i < run; i++) {
-          if (line[i] === ".") {
-            return 0;
-          }
-        }
-        if (line[run] === "#") {
-          return 0;
-        }
-
-        return this.countWays(line.slice(run + 1), leftoverRuns);
-      }
-      // Otherwise dunno first spot, pick
-      return (
-        this.countWays("#" + line.slice(1), runs) + this.countWays("." + line.slice(1), runs)
-      );
-    }
-  );
-
+  sum(a: number, b: number) {
+    return a + b;
+  }
 }
