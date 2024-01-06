@@ -4,12 +4,12 @@
     <a [href]="'https://adventofcode.com' + router.url" target="_blank">{{'https://adventofcode.com' + router.url}}</a>
   </div>
   <div class="line">
-    <span class="label">Answer 1: {{answer1 || 'calculating...'}}</span>
+    <span class="label">Answer 1: {{answer1 ?? 'calculating...'}}</span>
   </div>
   <div class="line">
-    <span class="label">Answer 2: {{answer2 || 'calculating...'}}</span>
+    <span class="label">Answer 2: {{answer2 ?? 'calculating...'}}</span>
   </div>
   <div class="line">
-    <span class="label">Calculation time (ms): {{time || 'N/A'}}</span>
+    <span class="label">Calculation time (ms): {{time ?? 'N/A'}}</span>
   </div>
 </div>
