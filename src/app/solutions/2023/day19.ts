@@ -20,6 +20,8 @@ type Rating = {
   s: number
 }
 
+type Range = Record<Operand, [number, number]>;
+
 enum Operand {
   x = 'x',
   m = 'm',
@@ -81,8 +83,18 @@ hdj{m>838:A,pv}
   }
 
   public override part2(rawInput: string) {
-
-    return 0;
+    const [workflowStrs, ratingStrs] = rawInput.replace(/\r/g, '').split('\n\n').map(str => str.split('\n'));
+    const workflows = workflowStrs.map(workflow => this.parseWorkflow(workflow));
+    const range: Range = {
+      x: [1, 4000],
+      m: [1, 4000],
+      a: [1, 4000],
+      s: [1, 4000],
+    };
+    const validRanges = this.getValidRanges(workflows, "in", range);
+    return validRanges.map((range) =>
+      Object.values(range).reduce((acc, [min, max]) => acc * (max - min + 1), 1)
+    ).reduce((acc: number, v: number) => acc + v, 0);
   }
 
   parseWorkflow(str: string): Workflow {
@@ -111,5 +123,39 @@ hdj{m>838:A,pv}
       s: getNumberFromString(ratingArr[3])
     }
   }
+
+  getValidRanges = (workflows: Workflow[], workflowName: string, range: Range): Range[] => {
+    if (workflowName === "R") return [];
+    if (workflowName === "A") {
+      return [this.copyRange(range)];
+    }
+    const workflow = workflows.find(w => w.name == workflowName);
+    const ranges = [];
+    for (const rule of workflow?.rules as Rule[]) {
+      if (!rule.operator) {
+        ranges.push(...this.getValidRanges(workflows, rule.ruleName as string, this.copyRange(range)));
+      }
+  
+      if (rule.operator === Operator.LESS) {
+        const newRange = this.copyRange(range);
+        newRange[rule.operand as Operand][1] = (rule.value as number) - 1;
+        ranges.push(...this.getValidRanges(workflows, rule.ruleName as string, newRange));
+        range[rule.operand as Operand][0] = rule.value as number;
+      }
+  
+      if (rule.operator === Operator.MORE) {
+        const newRange = this.copyRange(range);
+        newRange[rule.operand as Operand][0] = (rule.value as number) + 1;
+        ranges.push(...this.getValidRanges(workflows, rule.ruleName as string, newRange));
+        range[rule.operand as Operand][1] = rule.value as number;
+      }
+    }
+  
+    return ranges;
+  };
+
+  copyRange(range: Range): Range {
+    return JSON.parse(JSON.stringify(range));
+  } 
 
 }
