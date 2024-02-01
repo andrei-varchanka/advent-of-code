@@ -23,10 +23,10 @@ export default class Day21 extends Solver {
     const matrix = getStringMatrix(rawInput);
     let TARGET = "T";
     let FUTURE = "F";
-    for (let row = 0; row < matrix.length; row++) {
-      for (let col = 0; col < matrix[row].length; col++) {
-        if (matrix[row][col] == "S") {
-          matrix[row][col] = "F";
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix[i].length; j++) {
+        if (matrix[i][j] == "S") {
+          matrix[i][j] = "F";
           break;
         }
       }
@@ -41,16 +41,16 @@ export default class Day21 extends Solver {
         TARGET = "T";
         FUTURE = "F";
       }
-      for (let row = 0; row < matrix.length; row++) {
-        for (let col = 0; col < matrix[row].length; col++) {
-          if (matrix[row][col] != TARGET) {
+      for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+          if (matrix[i][j] != TARGET) {
             continue;
           }
-          matrix[row][col] = ".";
-          this.tryWalk1(matrix, row - 1, col, FUTURE);
-          this.tryWalk1(matrix, row + 1, col, FUTURE);
-          this.tryWalk1(matrix, row, col - 1, FUTURE);
-          this.tryWalk1(matrix, row, col + 1, FUTURE);
+          matrix[i][j] = ".";
+          this.tryWalk1(matrix, i - 1, j, FUTURE);
+          this.tryWalk1(matrix, i + 1, j, FUTURE);
+          this.tryWalk1(matrix, i, j - 1, FUTURE);
+          this.tryWalk1(matrix, i, j + 1, FUTURE);
         }
       }
       if (step == 64) {
@@ -58,9 +58,9 @@ export default class Day21 extends Solver {
       }
     }
     let count = 0;
-    for (let row = 0; row < matrix.length; row++) {
-      for (let col = 0; col < matrix[row].length; col++) {
-        if (matrix[row][col] == "." || matrix[row][col] == "#") {
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix[i].length; j++) {
+        if (matrix[i][j] == "." || matrix[i][j] == "#") {
           continue;
         }
         count += 1;
@@ -72,24 +72,24 @@ export default class Day21 extends Solver {
   public override part2(rawInput: string) {
     const STEPS = 26501365;
     let MAP = new Uint8Array(this.DIM * this.DIM);
-    let homeRow = 0;
-    let homeCol = 0;
+    let startX = 0;
+    let startY = 0;
     const lines = getLines(rawInput);
-    for (let row = 0; row < this.DIM; row++) {
-      for (let col = 0; col < this.DIM; col++) {
-        const index = row * this.DIM + col
-        if (lines[row][col] == "#") {
+    for (let i = 0; i < this.DIM; i++) {
+      for (let j = 0; j < this.DIM; j++) {
+        const index = i * this.DIM + j
+        if (lines[i][j] == "#") {
           MAP[index] = this.ROCK;
           continue;
         }
-        if (lines[row][col] == "S") {
-          homeRow = row;
-          homeCol = col;
+        if (lines[i][j] == "S") {
+          startX = i;
+          startY = j;
         }
       }
     }
-    const squareA = this.walkAndCount(MAP, homeRow, homeCol, 129);
-    const squareB = this.walkAndCount(MAP, homeRow, homeCol, 130);
+    const squareA = this.walkAndCount(MAP, startX, startY, 129);
+    const squareB = this.walkAndCount(MAP, startX, startY, 130);
     const smallTriangleA = this.walkAndCount(MAP, 0, 0, 64);
     const smallTriangleB = this.walkAndCount(MAP, 0, 130, 64);
     const smallTriangleC = this.walkAndCount(MAP, 130, 0, 64);
@@ -126,16 +126,16 @@ export default class Day21 extends Solver {
 
 
 
-  tryWalk1(matrix: string[][], row: number, col: number, future: string) {
-    if (row < 0 || col < 0 || row > matrix.length - 1 || col > matrix[0].length - 1 || matrix[row][col] == "#") {
+  tryWalk1(matrix: string[][], i: number, j: number, future: string) {
+    if (i < 0 || j < 0 || i > matrix.length - 1 || j > matrix[0].length - 1 || matrix[i][j] == "#") {
       return;
     }
-    matrix[row][col] = future;
+    matrix[i][j] = future;
   }
 
-  tryWalk2(map: Uint8Array, row: number, col: number, future: number) {
-    const index = row * this.DIM + col;
-    if (row < 0 || col < 0 || row > this.DIM - 1 || col > this.DIM - 1 || map[index] == this.ROCK) {
+  tryWalk2(map: Uint8Array, i: number, j: number, future: number) {
+    const index = i * this.DIM + j;
+    if (i < 0 || j < 0 || i > this.DIM - 1 || j > this.DIM - 1 || map[index] == this.ROCK) {
       return;
     }
     map[index] = future;
@@ -163,17 +163,17 @@ export default class Day21 extends Solver {
         TARGET = 2;
         FUTURE = 3;
       }
-      for (let row = 0; row < this.DIM; row++) {
-        for (let col = 0; col < this.DIM; col++) {
-          const index = row * this.DIM + col;
+      for (let i = 0; i < this.DIM; i++) {
+        for (let j = 0; j < this.DIM; j++) {
+          const index = i * this.DIM + j;
           if (map[index] != TARGET) {
             continue;
           }
           map[index] = this.FREE;
-          this.tryWalk2(map, row - 1, col, FUTURE);
-          this.tryWalk2(map, row + 1, col, FUTURE);
-          this.tryWalk2(map, row, col - 1, FUTURE);
-          this.tryWalk2(map, row, col + 1, FUTURE);
+          this.tryWalk2(map, i - 1, j, FUTURE);
+          this.tryWalk2(map, i + 1, j, FUTURE);
+          this.tryWalk2(map, i, j - 1, FUTURE);
+          this.tryWalk2(map, i, j + 1, FUTURE);
         }
       }
       if (step == maxStep) {
@@ -192,9 +192,9 @@ export default class Day21 extends Solver {
 
   countPlots(map: Uint8Array) {
     let count = 0;
-    for (let row = 0; row < this.DIM; row++) {
-      for (let col = 0; col < this.DIM; col++) {
-        const index = row * this.DIM + col;
+    for (let i = 0; i < this.DIM; i++) {
+      for (let j = 0; j < this.DIM; j++) {
+        const index = i * this.DIM + j;
         if (map[index] == this.FREE || map[index] == this.ROCK) {
           continue;
         }
