@@ -28,6 +28,8 @@ export default class Day22 extends Solver {
   levels: Record<number, Brick[]> = {};
 
   public override part1(rawInput: string) {
+    this.bricks = {};
+    this.levels = {};
     this.processInput(rawInput);
     this.placeBricksOnLevels();
     this.settleBricks();
@@ -35,7 +37,12 @@ export default class Day22 extends Solver {
   }
 
   public override part2(rawInput: string) {
-    return 0;
+    this.bricks = {};
+    this.levels = {};
+    this.processInput(rawInput);
+    this.placeBricksOnLevels();
+    this.settleBricks();
+    return this.countChainReaction();
   }
 
   processInput(input: string) {
@@ -163,5 +170,43 @@ export default class Day22 extends Solver {
       }
     }
     return false;
+  }
+
+  countChainReaction() {
+    let sum = 0;
+    for (const brick of Object.values(this.bricks)) {
+      sum += this.countChainReactionFor(brick);
+    }
+    return sum;
+  }
+
+  countChainReactionFor(master: Brick) {
+    const dependents: Record<number, boolean> = {};
+    let futures: number[] = master.mounteds;
+    while (futures.length != 0) {
+      const currents: number[] = futures;
+      futures = [];
+      for (const id of currents) {
+        const brick = this.bricks[id];
+        if (!this.isDependent(master, dependents, brick)) {
+          continue;
+        }
+        dependents[id] = true;
+        for (const mounted of brick.mounteds) {
+          futures.push(mounted);
+        }
+      }
+    }
+    return Object.keys(dependents).length;
+  }
+
+  isDependent(master: Brick, dependents: Record<number, boolean>, brick: Brick) {
+    for (const holder of brick.holders) {
+      if (holder == master.id || dependents[holder] == true) {
+        continue;
+      }
+      return false;
+    }
+    return true;
   }
 }
