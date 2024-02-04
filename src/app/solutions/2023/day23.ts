@@ -43,19 +43,19 @@ export default class Day23 extends Solver {
   };
 
   public override part1(rawInput: string) {
-    const trailMap = getLines(rawInput);
-    const mr = trailMap.length - 1;
-    const mc = trailMap[0].length - 1;
-    const [tr, tc] = [mr, mc - 1];
-    return this.walkP1(trailMap, 1, 1, tr, tc, ['0:1'], 0);
+    const matrix = getLines(rawInput);
+    const rows = matrix.length - 1;
+    const columns = matrix[0].length - 1;
+    const [tr, tc] = [rows, columns - 1];
+    return this.walkP1(matrix, 1, 1, tr, tc, ['0:1'], 0);
   }
 
   public override part2(rawInput: string) {
-    const trailMap = getLines(rawInput);
-    const mr = trailMap.length - 1;
-    const mc = trailMap[0].length - 1;
-    const [tr, tc] = [mr, mc - 1];
-    const graph = this.buildGraph(trailMap, tr, tc);
+    const matrix = getLines(rawInput);
+    const rows = matrix.length - 1;
+    const columns = matrix[0].length - 1;
+    const [tr, tc] = [rows, columns - 1];
+    const graph = this.buildGraph(matrix, tr, tc);
     return this.walkP2(graph, '0,1', `${tr},${tc}`, [], 0);
   }
 
