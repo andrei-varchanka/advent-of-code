@@ -20,9 +20,17 @@ export default class Day24 extends Solver {
 20, 19, 15 @  1, -5, -3`;
 
   testArea = {
-    min: 200000000000000,
-    max: 400000000000000
+    min: 7,
+    max: 27
   }
+
+  A: Array<number[]> = [];
+  B: Array<number> = [];
+
+  // testArea = {
+  //   min: 200000000000000,
+  //   max: 400000000000000
+  // }
 
   public override part1(rawInput: string) {
     const hailstones: Hailstone[] = this.getHailstones(rawInput);
@@ -43,7 +51,12 @@ export default class Day24 extends Solver {
   }
 
   public override part2(rawInput: string) {
-    return 0;
+    const hailstones: Hailstone[] = this.getHailstones(rawInput);
+    for (let i = 1; i <= 3; i++) {
+      this.add(hailstones, i);
+    }
+    const [pxr, pyr, pzr] = this.cramer();
+    return pxr + pyr + pzr;
   }
 
   getHailstones(rawInput: string) {
@@ -79,6 +92,27 @@ export default class Day24 extends Solver {
       return null;
     }
     return { x, y };
+  }
+
+  add(hailstones: Hailstone[], n: number) {
+    const [px0, py0, pz0, vx0, vy0, vz0] = [hailstones[0].px, hailstones[0].py, hailstones[0].pz, hailstones[0].vx, hailstones[0].vy, hailstones[0].vz];
+    const [pxN, pyN, pzN, vxN, vyN, vzN] = [hailstones[n].px, hailstones[n].py, hailstones[n].pz, hailstones[n].vx, hailstones[n].vy, hailstones[n].vz];
+    this.A.push([vy0 - vyN, vxN - vx0, 0, pyN - py0, px0 - pxN, 0]);
+    this.B.push(px0 * vy0 - py0 * vx0 - pxN * vyN + pyN * vxN);
+    this.A.push([vz0 - vzN, 0, vxN - vx0, pzN - pz0, 0, px0 - pxN]);
+    this.B.push(px0 * vz0 - pz0 * vx0 - pxN * vzN + pzN * vxN);
+  }
+
+  det(m: any) {
+    if (m.length === 0) return 1;
+    let [l, ...r] = m;
+    r = l.map((n: any, i: any) => n * this.det(r.map((row: any) => row.toSpliced(i, 1))));
+    return r.reduce((a: any, b: any, i: any) => (i % 2 ? a - b : a + b), 0);
+  }
+  
+  cramer() {
+    const detA = this.det(this.A);
+    return this.A.map((_, i) => this.det(this.A.map((r: any, j) => r.toSpliced(i, 1, this.B[j]))) / detA);
   }
 
 }
